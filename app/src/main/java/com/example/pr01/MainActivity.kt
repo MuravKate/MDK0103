@@ -1,11 +1,9 @@
 package com.example.pr01
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pr01.ViewModel.TodoViewModel
@@ -20,10 +18,8 @@ class MainActivity : ComponentActivity() {
                 viewModel.fetchTodos()
             }
 
-            LazyColumn {
-                items(viewModel.todosList) { todo ->
-                    Text(text = "${todo.todo} — ${if (todo.completed) "выполнено" else "не выполнено"}")
-                }
+            viewModel.todosList.forEach { todo ->
+                Log.d("TODO", "${todo.todo} — ${if (todo.completed) "выполнено" else "не выполнено"}")
             }
         }
     }
