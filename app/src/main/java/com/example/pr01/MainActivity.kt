@@ -6,19 +6,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pr01.ViewModel.PostViewModel
 import com.example.pr01.ViewModel.TodoViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val viewModel: TodoViewModel = viewModel()
+            val todoViewModel: TodoViewModel = viewModel()
+            val postViewModel: PostViewModel = viewModel()
 
             LaunchedEffect(Unit) {
-                viewModel.fetchTodos()
+                todoViewModel.fetchTodos()
+                postViewModel.addPost()
             }
 
-            viewModel.todosList.forEach { todo ->
+            todoViewModel.todosList.forEach { todo ->
                 Log.d("TODO", "${todo.todo} — ${if (todo.completed) "выполнено" else "не выполнено"}")
             }
         }

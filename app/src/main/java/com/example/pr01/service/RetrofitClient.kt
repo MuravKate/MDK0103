@@ -1,5 +1,7 @@
 package com.example.pr01.service
 
+import com.example.pr01.data.PostResponse
+import com.example.pr01.data.PostRequest
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -20,5 +22,7 @@ object RetrofitClient {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val retrofitAPI: TodosInterface = retrofit.create(TodosInterface::class.java)
+    val retrofitAPI: AllInterface = retrofit.create(AllInterface::class.java)
 }
+
+interface AllInterface : TodosInterface, PostInterface
