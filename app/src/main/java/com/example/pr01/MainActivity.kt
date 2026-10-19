@@ -1,28 +1,21 @@
 package com.example.pr01
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.pr01.ViewModel.PostViewModel
-import com.example.pr01.ViewModel.TodoViewModel
+import com.example.pr01.ViewModel.ProductViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: ProductViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val todoViewModel: TodoViewModel = viewModel()
-            val postViewModel: PostViewModel = viewModel()
-
             LaunchedEffect(Unit) {
-                todoViewModel.fetchTodos()
-                postViewModel.addPost()
-            }
-
-            todoViewModel.todosList.forEach { todo ->
-                Log.d("TODO", "${todo.todo} — ${if (todo.completed) "выполнено" else "не выполнено"}")
+                viewModel.loadAndModifyProduct()
             }
         }
     }
