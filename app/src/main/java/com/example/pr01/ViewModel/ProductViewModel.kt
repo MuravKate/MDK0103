@@ -14,9 +14,8 @@ class ProductViewModel : ViewModel() {
             try {
                 val productId = 25
 
-                Log.d("PRODUCT", "=== ЗАГРУЗКА ДАННЫХ (ID=$productId) ===")
+                Log.d("PRODUCT", "ЗАГРУЗКА ДАННЫХ (ID=$productId)")
 
-                // 1. Получаем исходную запись с сервера
                 val originalProduct = RetrofitClient.productAPI.getProduct(productId)
                 Log.d("PRODUCT", "ДО РЕДАКТИРОВАНИЯ:")
                 Log.d("PRODUCT", "  id: ${originalProduct.id}")
@@ -25,17 +24,17 @@ class ProductViewModel : ViewModel() {
                 Log.d("PRODUCT", "  category: ${originalProduct.category}")
                 Log.d("PRODUCT", "  stock: ${originalProduct.stock}")
 
-                Log.d("PRODUCT", "=== ИЗМЕНЕНИЕ ДАННЫХ ===")
+                Log.d("PRODUCT", "ИЗМЕНЕНИЕ ДАННЫХ")
 
-                // 2. Меняем именно эту запись (id сохраняется)
+
                 val updatedProduct = originalProduct.copy(
                     title = "Офисное кресло Comfort-Т",
-                    price = 14200,
+                    price = 14200.0,
                     category = "Офисная мебель",
                     stock = 3
                 )
 
-                // 3. Отправляем PUT и выводим в лог именно ОТВЕТ СЕРВЕРА
+
                 val serverResponse = RetrofitClient.productAPI.updateProduct(productId, updatedProduct)
                 Log.d("PRODUCT", "ПОСЛЕ РЕДАКТИРОВАНИЯ (ответ сервера):")
                 Log.d("PRODUCT", "  id: ${serverResponse.id}")
@@ -44,7 +43,7 @@ class ProductViewModel : ViewModel() {
                 Log.d("PRODUCT", "  category: ${serverResponse.category}")
                 Log.d("PRODUCT", "  stock: ${serverResponse.stock}")
 
-                Log.d("PRODUCT", "=== ГОТОВО ===")
+                Log.d("PRODUCT", "ГОТОВО")
 
             } catch (e: Exception) {
                 Log.e("PRODUCT", "Ошибка выполнения: ${e.localizedMessage}", e)

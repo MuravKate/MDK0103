@@ -14,9 +14,9 @@ class PostViewModel : ViewModel() {
                     title = "Уют в каждой детали: встречайте нашу новинку!",
                     body = "Мы знаем, как важно возвращаться туда, где тепло и спокойно. Наша новая коллекция ароматических свечей из соевого воска создана именно для таких моментов.",
                     tags = listOf("декор дома", "уют в доме", "аромасвечи", "подарок девушке", "ручная работа", "новинка"),
-                    views = 0
+
                 )
-                val response = RetrofitClient.retrofitAPI.addPost(request)
+                val response = RetrofitClient.postAPI.addPost(request)
                 println("ID: ${response.id}")
                 println("Title: ${response.title}")
                 println("Body: ${response.body}")

@@ -13,7 +13,7 @@ class TodoViewModel : ViewModel() {
     fun fetchTodos() {
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.retrofitAPI.getTodos()
+                val response = RetrofitClient.todosAPI.getTodos()
                 todosList.clear()
                 todosList.addAll(response.todos)
             } catch (e: Exception) {
