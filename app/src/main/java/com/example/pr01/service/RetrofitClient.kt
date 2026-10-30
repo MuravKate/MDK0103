@@ -23,7 +23,7 @@ object RetrofitClient {
 
     val postAPI: PostInterface = retrofit.create(PostInterface::class.java)
     val productAPI: ProductInterface = retrofit.create(ProductInterface::class.java)
-
+    val recipesService: RecipeService = retrofit.create(RecipeService::class.java)
     val todosAPI: TodosInterface = retrofit.create(TodosInterface::class.java)
 }
 
