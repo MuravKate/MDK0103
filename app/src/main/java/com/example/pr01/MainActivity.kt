@@ -1,23 +1,44 @@
 package com.example.pr01
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.LaunchedEffect
-import com.example.pr01.ViewModel.ProductViewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.pr01.ViewModel.CartViewModel
+import com.example.pr01.ViewModel.LoginViewModel
+import com.example.pr01.data.AuthRequest
+import com.example.pr01.service.TokenManager
 
 class MainActivity : ComponentActivity() {
-
-    private val viewModel: ProductViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val tokenManager = TokenManager(applicationContext)
         setContent {
-            LaunchedEffect(Unit) {
-                viewModel.loadAndModifyProduct()
+
+            val cartViewModel: CartViewModel by viewModels {
+                viewModelFactory {
+                    initializer {
+                        CartViewModel(tokenManager)
+                    }
+                }
             }
+
+            val loginViewModel: LoginViewModel by viewModels {
+                viewModelFactory {
+                    initializer {
+                        LoginViewModel(tokenManager, cartViewModel)
+                    }
+                }
+            }
+
+            val authRequest = AuthRequest(
+                identity = "kate09102007_new@mail.com",
+                password = "Password1234!"
+            )
+            loginViewModel.login(authRequest)
         }
     }
 }

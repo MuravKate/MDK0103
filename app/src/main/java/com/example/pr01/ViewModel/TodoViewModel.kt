@@ -12,13 +12,13 @@ class TodoViewModel : ViewModel() {
 
     fun fetchTodos() {
         viewModelScope.launch {
-            try {
-                val response = RetrofitClient.todosAPI.getTodos()
-                todosList.clear()
-                todosList.addAll(response.todos)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+//            try {
+//                val response = RetrofitClient.todosAPI.getTodos()
+//                todosList.clear()
+//                todosList.addAll(response.todos)
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
         }
     }
 }
