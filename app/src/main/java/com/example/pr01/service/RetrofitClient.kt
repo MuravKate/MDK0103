@@ -21,7 +21,7 @@ object RetrofitClient {
         .build()
 
     private val api: Retrofit = Retrofit.Builder()
-        .baseUrl("http://10.207.106")
+        .baseUrl("http://10.207.106.59:8090/api/collections/")
         .client(httpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()

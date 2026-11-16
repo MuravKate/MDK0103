@@ -35,8 +35,8 @@ class MainActivity : ComponentActivity() {
             }
 
             val authRequest = AuthRequest(
-                identity = "kate09102007_new@mail.com",
-                password = "Password1234!"
+                identity = "kate09102007@mail.com",
+                password = "123456789"
             )
             loginViewModel.login(authRequest)
         }
