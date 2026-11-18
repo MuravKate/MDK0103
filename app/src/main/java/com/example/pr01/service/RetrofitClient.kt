@@ -28,5 +28,6 @@ object RetrofitClient {
 
     val authService: AuthService = api.create(AuthService::class.java)
 
+    val cartService: CartService = api.create(CartService::class.java)
     val cartServiceAuth: CartServiceAuth = api.create(CartServiceAuth::class.java)
 }

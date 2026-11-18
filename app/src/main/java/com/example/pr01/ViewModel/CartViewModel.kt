@@ -14,7 +14,7 @@ class CartViewModel(val tokenManager: TokenManager) : ViewModel() {
             try {
                 val token = tokenManager.tokenFlow()
                 token?.let {
-                    val cartResponse = RetrofitClient.cartServiceAuth.getCartsAuth(token)
+                    val cartResponse = RetrofitClient.cartServiceAuth.getCartsAuth(it)
                     for (item in cartResponse.items) {
                         Log.d(
                             "CartViewModel",
