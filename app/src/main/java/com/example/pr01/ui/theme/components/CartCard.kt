@@ -26,8 +26,7 @@ fun CartCard(
     cart: Carts,
     modifier: Modifier = Modifier
 ) {
-    val productsCount = cart.products?.size ?: 0
-    val totalFormatted = String.format(Locale.US, "$ %.2f", cart.total ?: 0.0)
+
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -52,7 +51,7 @@ fun CartCard(
                     fontWeight = FontWeight.Normal
                 )
                 Text(
-                    text = productsCount.toString(),
+                    text = cart.totalProducts.toString(),
                     color = Color(0xFF242424),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
@@ -73,7 +72,7 @@ fun CartCard(
                     fontWeight = FontWeight.Normal
                 )
                 Text(
-                    text = totalFormatted,
+                    text = "$ ${cart.total}",
                     color = Color(0xFF242424),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold

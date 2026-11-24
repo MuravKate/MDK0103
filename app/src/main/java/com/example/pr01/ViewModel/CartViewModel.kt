@@ -11,7 +11,8 @@ import kotlinx.coroutines.launch
 
 class CartViewModel(val tokenManager: TokenManager) : ViewModel() {
 
-    val cartsList = mutableStateListOf<Carts>()
+    private val _cartsList = mutableStateListOf<Carts>()
+    val cartsList = _cartsList
 
     fun getCarts() {
         viewModelScope.launch {
@@ -26,8 +27,7 @@ class CartViewModel(val tokenManager: TokenManager) : ViewModel() {
                         Log.d(
                             "CartViewModel",
                             "id: ${item.id}" +
-                                    "\nuserId: ${item.userId}" +
-                                    "\nproducts: ${item.products}" +
+                                    "\nproducts: ${item.totalProducts}" +
                                     "\ntotal: ${item.total}" +
                                     "\ncreated: ${item.created}" +
                                     "\nupdated: ${item.updated}"
