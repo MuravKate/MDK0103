@@ -6,12 +6,17 @@ import androidx.lifecycle.viewModelScope
 import com.example.pr01.data.AuthRequest
 import com.example.pr01.service.RetrofitClient
 import com.example.pr01.service.TokenManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
     val tokenManager: TokenManager,
-    val cartViewModel: CartViewModel
+    val recipesViewModel: CartViewModel
 ) : ViewModel() {
+
+    private val _isAuthorized = MutableStateFlow(false)
+    val isAuthorized: StateFlow<Boolean> = _isAuthorized
 
     fun login(authRequest: AuthRequest) {
         viewModelScope.launch {
@@ -19,7 +24,8 @@ class LoginViewModel(
                 val authResponse = RetrofitClient.authService.authPassword(authRequest)
                 authResponse.token?.let {
                     tokenManager.saveToken(it)
-                    cartViewModel.getCarts()
+                    recipesViewModel.getCarts()
+                    _isAuthorized.value = true
                 }
             } catch (e: Exception) {
                 Log.e("LoginViewModel", e.message.toString())
