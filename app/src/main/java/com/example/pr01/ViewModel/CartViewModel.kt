@@ -7,11 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.pr01.data.Carts
 import com.example.pr01.service.RetrofitClient
 import com.example.pr01.service.TokenManager
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class CartViewModel(val tokenManager: TokenManager) : ViewModel() {
 
-    private val _cartsList = mutableStateListOf<Carts>()
+    private val _cartsList = MutableStateFlow<List<Carts>>(listOf())
     val cartsList = _cartsList
 
     fun getCarts() {
@@ -20,8 +21,7 @@ class CartViewModel(val tokenManager: TokenManager) : ViewModel() {
                 val token = tokenManager.tokenFlow()
                 token?.let {
                     val cartResponse = RetrofitClient.cartServiceAuth.getCartsAuth(it)
-                    cartsList.clear()
-                    cartsList.addAll(cartResponse.items)
+                    cartsList.value = cartResponse.items
 
                     for (item in cartResponse.items) {
                         Log.d(

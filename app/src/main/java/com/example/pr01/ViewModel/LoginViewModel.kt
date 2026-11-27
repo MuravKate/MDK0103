@@ -24,7 +24,6 @@ class LoginViewModel(
                 val authResponse = RetrofitClient.authService.authPassword(authRequest)
                 authResponse.token?.let {
                     tokenManager.saveToken(it)
-                    recipesViewModel.getCarts()
                     _isAuthorized.value = true
                 }
             } catch (e: Exception) {
