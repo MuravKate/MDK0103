@@ -16,6 +16,7 @@ import com.example.pr01.components.CartCard
 @Composable
 fun CartsScreen(
     cartViewModel: CartViewModel,
+    onCartClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val carts = cartViewModel.cartsList
@@ -28,7 +29,10 @@ fun CartsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(carts) { cart ->
-            CartCard(cart = cart)
+            CartCard(
+                cart = cart,
+                onClick = { cart.id?.let { onCartClick(it) } }
+            )
         }
     }
 }

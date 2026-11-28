@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.pr01.ViewModel.CartViewModel
 import com.example.pr01.ViewModel.LoginViewModel
 import com.example.pr01.screens.CartsScreen
+import com.example.pr01.screens.EditCartScreen
 import com.example.pr01.screens.LoginScreen
 import com.example.pr01.service.TokenManager
 import com.example.pr01.ui.theme.Pr01Theme
@@ -42,18 +43,33 @@ class MainActivity : ComponentActivity() {
         setContent {
             Pr01Theme {
                 var isLoggedIn by remember { mutableStateOf(false) }
+                var editingCartId by remember { mutableStateOf<String?>(null) }
 
-                if (!isLoggedIn) {
-                    LoginScreen(
-                        viewModel = loginViewModel,
-                        onLoginSuccess = { isLoggedIn = true }
-                    )
-                } else {
-                    CartsScreen(cartViewModel)
+                when {
+                    !isLoggedIn -> {
+                        LoginScreen(
+                            viewModel = loginViewModel,
+                            onLoginSuccess = { isLoggedIn = true }
+                        )
+                    }
+
+                    editingCartId != null -> {
+                        EditCartScreen(
+                            cartId = editingCartId!!,
+                            cartViewModel = cartViewModel,
+                            onSaveSuccess = { editingCartId = null }
+                        )
+                    }
+
+                    else -> {
+                        CartsScreen(
+                            cartViewModel = cartViewModel,
+                            onCartClick = { id -> editingCartId = id }
+                        )
+                    }
                 }
-
-
             }
         }
+
     }
 }
