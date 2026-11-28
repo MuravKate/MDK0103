@@ -25,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +43,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pr01.R
 import com.example.pr01.ViewModel.LoginViewModel
+import com.example.pr01.components.ShippingAddressCard
 import com.example.pr01.utils.CameraPermissionHelper
+import com.example.pr01.utils.getCurrentDeviceLocation
+import com.example.pr01.utils.rememberLocationPermissionHelper
 
 @Composable
 fun ProfileScreen(
@@ -54,13 +58,29 @@ fun ProfileScreen(
     val cameraHelper = remember { CameraPermissionHelper(context) }
 
     val merriweatherBold = FontFamily(Font(R.font.merriweather_bold, FontWeight.Bold))
-    val nunitoSans = FontFamily(Font(R.font.nunito_sans))
+    val nunitoSans = FontFamily(
+        Font(R.font.nunito_sans, FontWeight.Normal),
+        Font(R.font.nunito_sans_bold, FontWeight.Bold)
+    )
 
     val profile = viewModel.userProfile
 
     var tempPhotoUri by remember { mutableStateOf<Uri?>(null) }
     var avatarUri by remember { mutableStateOf<Uri?>(null) }
+    var shippingAddress by rememberSaveable { mutableStateOf("") }
 
+    val loadLocation = {
+        getCurrentDeviceLocation(
+            context = context,
+            onSuccess = { location ->
+                shippingAddress = "Широта: ${location.latitude}, Долгота: ${location.longitude}"
+            }
+        )
+    }
+
+    val locationPermission = rememberLocationPermissionHelper(
+        onGranted = { loadLocation() }
+    )
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
@@ -76,18 +96,22 @@ fun ProfileScreen(
         cameraLauncher.launch(uri)
     }
 
-
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
-    ) { _ -> }
-
-
-    LaunchedEffect(Unit) {
-        if (!cameraHelper.hasCameraPermission()) {
-            cameraPermissionLauncher.launch(CameraPermissionHelper.CAMERA_PERMISSION)
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            openCamera()
         }
     }
 
+    // При запуске экрана запрашиваем только геолокацию
+    LaunchedEffect(Unit) {
+        if (locationPermission.hasPermission) {
+            loadLocation()
+        } else {
+            locationPermission.launchPermissionRequest()
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.fetchProfile()
@@ -98,7 +122,6 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -154,6 +177,7 @@ fun ProfileScreen(
                     .clip(CircleShape)
                     .background(Color(0xFFF0F0F0))
                     .clickable {
+                        // Запрос разрешения на камеру только при нажатии на иконку
                         if (cameraHelper.hasCameraPermission()) {
                             openCamera()
                         } else {
@@ -206,5 +230,19 @@ fun ProfileScreen(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        ShippingAddressCard(
+            addressText = shippingAddress,
+            onClick = {
+                if (locationPermission.hasPermission) {
+                    loadLocation()
+                } else {
+                    locationPermission.launchPermissionRequest()
+                }
+            },
+            modifier = Modifier.padding(horizontal = 20.dp)
+        )
     }
 }

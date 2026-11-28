@@ -14,7 +14,6 @@ class CameraPermissionHelper(private val context: Context) {
         const val CAMERA_PERMISSION = Manifest.permission.CAMERA
     }
 
-
     fun hasCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
             context,
