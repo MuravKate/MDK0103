@@ -13,6 +13,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore("data_stor
 class TokenManager(private val context: Context) {
     companion object {
         val ACCESS_TOKEN = stringPreferencesKey("access_token")
+        val USER_ID = stringPreferencesKey("user_id")
     }
 
     suspend fun saveToken(token: String) {
@@ -23,6 +24,17 @@ class TokenManager(private val context: Context) {
         }
     }
 
+    suspend fun saveUserId(userId: String) {
+        context.dataStore.updateData {
+            it.toMutablePreferences().also { preferences ->
+                preferences[USER_ID] = userId
+            }
+        }
+    }
+
     suspend fun tokenFlow(): String? =
         context.dataStore.data.map { preferences -> preferences[ACCESS_TOKEN] }.first()
+
+    suspend fun userIdFlow(): String? =
+        context.dataStore.data.map { preferences -> preferences[USER_ID] }.first()
 }

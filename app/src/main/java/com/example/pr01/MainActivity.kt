@@ -4,17 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.pr01.ViewModel.CartViewModel
 import com.example.pr01.ViewModel.LoginViewModel
-import com.example.pr01.screens.CartsScreen
-import com.example.pr01.screens.EditCartScreen
 import com.example.pr01.screens.LoginScreen
+import com.example.pr01.screens.ProfileScreen
 import com.example.pr01.service.TokenManager
 import com.example.pr01.ui.theme.Pr01Theme
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,20 +22,11 @@ class MainActivity : ComponentActivity() {
 
         val tokenManager = TokenManager(this)
 
-        val cartViewModel: CartViewModel by viewModels {
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    @Suppress("UNCHECKED_CAST")
-                    return CartViewModel(tokenManager) as T
-                }
-            }
-        }
-
         val loginViewModel: LoginViewModel by viewModels {
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     @Suppress("UNCHECKED_CAST")
-                    return LoginViewModel(tokenManager, cartViewModel) as T
+                    return LoginViewModel(tokenManager) as T
                 }
             }
         }
@@ -43,33 +34,22 @@ class MainActivity : ComponentActivity() {
         setContent {
             Pr01Theme {
                 var isLoggedIn by remember { mutableStateOf(false) }
-                var editingCartId by remember { mutableStateOf<String?>(null) }
 
-                when {
-                    !isLoggedIn -> {
-                        LoginScreen(
-                            viewModel = loginViewModel,
-                            onLoginSuccess = { isLoggedIn = true }
-                        )
-                    }
-
-                    editingCartId != null -> {
-                        EditCartScreen(
-                            cartId = editingCartId!!,
-                            cartViewModel = cartViewModel,
-                            onSaveSuccess = { editingCartId = null }
-                        )
-                    }
-
-                    else -> {
-                        CartsScreen(
-                            cartViewModel = cartViewModel,
-                            onCartClick = { id -> editingCartId = id }
-                        )
-                    }
+                if (!isLoggedIn) {
+                    LoginScreen(
+                        viewModel = loginViewModel,
+                        onLoginSuccess = { isLoggedIn = true }
+                    )
+                } else {
+                    ProfileScreen(
+                        viewModel = loginViewModel,
+                        onLogout = {
+                            loginViewModel.logout()
+                            isLoggedIn = false
+                        }
+                    )
                 }
             }
         }
-
     }
 }
