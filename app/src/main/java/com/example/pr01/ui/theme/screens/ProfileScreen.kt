@@ -1,8 +1,5 @@
 package com.example.pr01.screens
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,12 +39,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import com.example.pr01.R
 import com.example.pr01.ViewModel.LoginViewModel
-import java.io.File
+import com.example.pr01.utils.CameraPermissionHelper
 
 @Composable
 fun ProfileScreen(
@@ -56,6 +51,8 @@ fun ProfileScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val cameraHelper = remember { CameraPermissionHelper(context) }
+
     val merriweatherBold = FontFamily(Font(R.font.merriweather_bold, FontWeight.Bold))
     val nunitoSans = FontFamily(Font(R.font.nunito_sans))
 
@@ -64,7 +61,7 @@ fun ProfileScreen(
     var tempPhotoUri by remember { mutableStateOf<Uri?>(null) }
     var avatarUri by remember { mutableStateOf<Uri?>(null) }
 
-    // 1. Лаунчер камеры (сохраняет фото в файл по Uri через FileProvider)
+
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { isSaved: Boolean ->
@@ -74,31 +71,24 @@ fun ProfileScreen(
     }
 
     fun openCamera() {
-        val uri = createImageUri(context)
+        val uri = cameraHelper.createImageUri()
         tempPhotoUri = uri
         cameraLauncher.launch(uri)
     }
 
-    // 2. Единый лаунчер запроса разрешения на камеру
+
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
-    ) { _ ->
-        // Здесь камеру НЕ открываем, так как это первичный запрос при входе на экран
-    }
+    ) { _ -> }
 
-    // 3. Срабатывает СРАЗУ при переходе на ProfileScreen
+
     LaunchedEffect(Unit) {
-        val isGranted = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
-
-        if (!isGranted) {
-            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        if (!cameraHelper.hasCameraPermission()) {
+            cameraPermissionLauncher.launch(CameraPermissionHelper.CAMERA_PERMISSION)
         }
     }
 
-    // 4. Загрузка данных профиля с сервера
+
     LaunchedEffect(Unit) {
         viewModel.fetchProfile()
     }
@@ -108,7 +98,7 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Header bar
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -152,7 +142,6 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(18.dp))
 
-        // Информация о пользователе
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -165,8 +154,11 @@ fun ProfileScreen(
                     .clip(CircleShape)
                     .background(Color(0xFFF0F0F0))
                     .clickable {
-                        // При нажатии на иконку открываем камеру
-                        openCamera()
+                        if (cameraHelper.hasCameraPermission()) {
+                            openCamera()
+                        } else {
+                            cameraPermissionLauncher.launch(CameraPermissionHelper.CAMERA_PERMISSION)
+                        }
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -215,14 +207,4 @@ fun ProfileScreen(
             }
         }
     }
-}
-
-private fun createImageUri(context: Context): Uri {
-    val imagesDir = File(context.cacheDir, "images").apply { mkdirs() }
-    val imageFile = File(imagesDir, "avatar_${System.currentTimeMillis()}.jpg")
-    return FileProvider.getUriForFile(
-        context,
-        "${context.packageName}.fileprovider",
-        imageFile
-    )
 }
